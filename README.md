@@ -13,8 +13,8 @@ Implementação funcional do DREX (Real Digital) com contratos oficiais Wire Lab
 - ✅ Sistema completo de deploy automatizado
 - ✅ Integração com sistema TCC
 
-### 🎓 [@tcc-monorepo/tcc-assistencia-estudantil](./packages/tcc-assistencia-estudantil)
-Sistema de assistência estudantil construído sobre o DREX.
+### 🏛️ [@tcc-monorepo/student-assistance-vault](./packages/student-assistance-vault)
+Smart contracts para gestão do vault de assistência estudantil.
 
 **Funcionalidades:**
 - ✅ Contratos para gestão de auxílios estudantis
@@ -24,16 +24,38 @@ Sistema de assistência estudantil construído sobre o DREX.
 - ✅ Limites de gastos configuráveis
 - ✅ Rastreabilidade e auditoria completa
 
-### 📱 [@tcc-monorepo/student-assistance-mobile](./packages/student-assistance-mobile)
-Aplicativo móvel React Native para interação com o sistema de assistência estudantil.
+### 🖥️ [@tcc-monorepo/student-assistance-server](./packages/student-assistance-server)
+Backend server Node.js/Express para gerenciamento de dados, tipos de despesas e metadados de transações.
 
 **Funcionalidades:**
-- ✅ Interface intuitiva para estudantes e estabelecimentos
-- ✅ Visualização de saldos e limites de gastos
-- ✅ Processamento de despesas em tempo real
-- ✅ Integração direta com contratos DREX
-- ✅ Suporte a contas de teste para desenvolvimento
-- ✅ Design responsivo com Material Design
+- ✅ API RESTful para gerenciamento completo do sistema
+- ✅ Autenticação JWT com controle de acesso baseado em roles
+- ✅ Gerenciamento de estudantes e estabelecimentos
+- ✅ Controle de tipos de despesas e limites de gastos
+- ✅ Metadados de transações e rastreabilidade
+- ✅ Integração com PostgreSQL
+
+### 📊 [@tcc-monorepo/student-assistance-indexer](./packages/student-assistance-indexer)
+Indexador blockchain para eventos do StudentAssistanceVault construído com Ponder.
+
+**Funcionalidades:**
+- ✅ Indexação em tempo real de eventos do contrato
+- ✅ API GraphQL para consulta de dados históricos
+- ✅ Rastreamento de registros, depósitos e distribuições
+- ✅ Estatísticas agregadas do vault
+- ✅ Armazenamento em PostgreSQL
+
+### 🎛️ [@tcc-monorepo/student-assistance-dashboard](./packages/student-assistance-dashboard)
+Dashboard React moderno com interfaces para administradores, funcionários e estudantes.
+
+**Funcionalidades:**
+- ✅ Interface intuitiva para múltiplos tipos de usuários
+- ✅ Painel administrativo completo para gestão do sistema
+- ✅ Interface para estudantes visualizarem saldos e transações
+- ✅ Gerenciamento de estabelecimentos e tipos de despesas
+- ✅ Monitoramento de transações em tempo real
+- ✅ Design responsivo com Tailwind CSS
+- ✅ Integração direta com backend e blockchain
 
 ## 🚀 Deploy Rápido
 
@@ -41,25 +63,16 @@ Aplicativo móvel React Native para interação com o sistema de assistência es
 ```bash
 # Clonar repositório
 git clone <repo-url>
-cd tcc-monorepo
+cd student-assistance-drex
 
-# Deploy completo com um comando
-npm run deploy
+# Deploy completo com Docker
+docker-compose up -d
 ```
 
 ### Opção 2: Deploy Manual
 ```bash
 # Executar script de deploy
 ./deploy-student-assistance.sh
-```
-
-### Opção 3: Docker Compose
-```bash
-# Iniciar todos os serviços
-docker-compose up -d
-
-# Acompanhar logs
-docker-compose logs -f
 ```
 
 ## 📋 Serviços Disponíveis
@@ -69,74 +82,99 @@ Após o deploy bem-sucedido:
 | Serviço | URL | Descrição |
 |---------|-----|-----------|
 | Besu RPC | http://localhost:8545 | Endpoint blockchain |
-| Blockscout | http://localhost:4000 | Explorer blockchain |
-| PostgreSQL | localhost:5432 | Banco de dados |
+| Server API | http://localhost:3001 | Backend REST API |
+| Dashboard | http://localhost:3000 | Interface web (admin/staff/student) |
+| Indexer GraphQL | http://localhost:42069 | API GraphQL para dados históricos |
+| PostgreSQL (Server) | localhost:5434 | Banco de dados do servidor |
+| PostgreSQL (Indexer) | localhost:5433 | Banco de dados do indexador |
 
 ## 🔧 Comandos de Gerenciamento
 
 ### Docker
 ```bash
 # Status dos serviços
-npm run docker:status
+docker-compose ps
 
 # Ver logs
-npm run docker:logs
+docker-compose logs -f
 
 # Parar serviços
-npm run docker:down
+docker-compose down
 
 # Limpeza completa
-npm run docker:clean
+docker-compose down -v
 ```
 
 ### DREX
 ```bash
 # Compilar contratos DREX
-npm run drex:compile
+pnpm run --filter=drex-piloto compile
 
-# Deploy integrado
-npm run drex:deploy:integrated
+# Deploy DREX
+pnpm run --filter=drex-piloto deploy
 
 # Testes DREX
-npm run drex:test
+pnpm run --filter=drex-piloto test
 ```
 
-### TCC
+### Vault (Smart Contracts)
 ```bash
-# Compilar contratos TCC
-npm run tcc:compile
+# Compilar contratos Vault
+pnpm run --filter=student-assistance-vault compile
 
-# Deploy TCC
-npm run tcc:deploy
+# Deploy Vault
+pnpm run --filter=student-assistance-vault deploy
 
-# Testes TCC
-npm run tcc:test
+# Testes Vault
+pnpm run --filter=student-assistance-vault test
 
 # Cobertura de testes
-npm run tcc:coverage
+pnpm run --filter=student-assistance-vault coverage
 ```
 
-### Mobile App
+### Server
 ```bash
-# Iniciar app móvel
-npm run mobile:start
+# Executar servidor em desenvolvimento
+pnpm run server dev
 
-# Executar no Android
-npm run mobile:android
+# Build servidor
+pnpm run server build
 
-# Executar no iOS
-npm run mobile:ios
+# Migrations do banco
+pnpm run server migrate
+```
 
-# Executar no navegador
-npm run mobile:web
+### Dashboard
+```bash
+# Executar dashboard em desenvolvimento
+pnpm run dashboard dev
+
+# Build dashboard
+pnpm run dashboard build
+
+# Preview do build
+pnpm run dashboard preview
+```
+
+### Indexer
+```bash
+# Executar indexer em desenvolvimento
+pnpm run indexer dev
+
+# Build indexer
+pnpm run indexer build
+
+# Gerar tipos
+pnpm run indexer codegen
 ```
 
 ## 🏗️ Arquitetura
 
 ```
 ┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
-│   Blockscout    │    │  Student App    │    │  University     │
-│   Explorer      │    │  (Frontend)     │    │  Admin Panel    │
+│   Dashboard     │    │  GraphQL API    │    │  REST API       │
+│ (Admin/Staff/   │    │  (Indexer)      │    │  (Server)       │
+│  Student)       │    │  Port 42069     │    │  Port 3001      │
 └─────────┬───────┘    └─────────┬───────┘    └─────────┬───────┘
           │                      │                      │
           └──────────────────────┼──────────────────────┘
@@ -144,6 +182,7 @@ npm run mobile:web
                     ┌─────────────┴─────────────┐
                     │    Hyperledger Besu      │
                     │    (Blockchain Node)     │
+                    │      Port 8545           │
                     └─────────────┬─────────────┘
                                   │
                     ┌─────────────┴─────────────┐
@@ -158,7 +197,7 @@ npm run mobile:web
                     │  └─────────────────────┘ │
                     │                          │
                     │  ┌─────────────────────┐ │
-                    │  │  TCC System         │ │
+                    │  │  Student Vault      │ │
                     │  │  - StudentAssistance│ │
                     │  │  - Spending Limits  │ │
                     │  │  - Category Control │ │
@@ -171,8 +210,10 @@ npm run mobile:web
 | Package | Status | Funcionalidades | Deploy |
 |---------|--------|----------------|--------|
 | drex-piloto | ✅ Completo | Contratos oficiais Wire Labs | ✅ Integrado |
-| tcc-assistencia-estudantil | ✅ Completo | Sistema completo de assistência | ✅ Integrado |
-| student-assistance-mobile | ✅ Completo | App móvel React Native | ✅ Funcional |
+| student-assistance-vault | ✅ Completo | Smart contracts do vault | ✅ Integrado |
+| student-assistance-server | ✅ Completo | Backend REST API | ✅ Funcional |
+| student-assistance-indexer | ✅ Completo | Indexador blockchain GraphQL | ✅ Funcional |
+| student-assistance-dashboard | ✅ Completo | Interface web multi-usuário | ✅ Funcional |
 
 ## 💰 Sistema de Assistência Estudantil
 
@@ -183,6 +224,8 @@ npm run mobile:web
 - **💸 Distribuição de Auxílios**: Distribuição automática via DREX
 - **📊 Controle de Gastos**: Limites por categoria configuráveis
 - **🔍 Rastreabilidade**: Auditoria completa de todas as transações
+- **📈 Dashboard Completo**: Interface para admin, staff e estudantes
+- **📊 Análise Histórica**: GraphQL API para consulta de dados históricos
 
 ### Categorias de Gastos
 
@@ -192,10 +235,20 @@ npm run mobile:web
 - **🚌 Transporte**: 10% do auxílio (padrão)
 - **📦 Outros**: 0% (desabilitado por padrão)
 
+### Tipos de Usuários
+
+| Tipo | Acesso | Funcionalidades |
+|------|--------|----------------|
+| **Admin** | Completo | Gerenciamento total do sistema |
+| **Staff** | Limitado | Cadastro de estudantes e estabelecimentos |
+| **Student** | Próprios dados | Consulta de saldos, limites e transações |
+
 ### Contas de Teste
 
-| Papel | Saldo Inicial | Função |
-|-------|---------------|--------|
+| Papel | Credenciais | Função |
+|-------|-------------|--------|
+| Admin | admin / admin123 | Administração completa |
+| Staff | staff / staff123 | Operações limitadas |
 | BCB (Deployer) | 10.000 BRL | Autoridade central |
 | Universidade | 9.000 BRL | Distribui auxílios |
 | Estudante 1 | 450 BRL | Conta de teste |
@@ -206,36 +259,57 @@ npm run mobile:web
 
 - **[Guia de Deploy](./DEPLOYMENT.md)**: Instruções completas de deployment
 - **[DREX Package](./packages/drex-piloto/README.md)**: Documentação DREX
-- **[TCC Package](./packages/tcc-assistencia-estudantil/README.md)**: Documentação TCC
-- **[Mobile App](./apps/student-assistance-mobile/README.md)**: Documentação do app móvel
+- **[Vault Package](./packages/student-assistance-vault/README.md)**: Documentação Smart Contracts
+- **[Server Package](./packages/student-assistance-server/README.md)**: Documentação Backend API
+- **[Indexer Package](./packages/student-assistance-indexer/README.md)**: Documentação Indexador
+- **[Dashboard Package](./packages/student-assistance-dashboard/README.md)**: Documentação Interface Web
 
 ## 🛠️ Tecnologias
 
+### Blockchain & Smart Contracts
 - **Blockchain**: Hyperledger Besu
 - **Contratos**: Solidity + Hardhat
 - **DREX**: Contratos oficiais Wire Labs
-- **Monorepo**: Turborepo + npm workspaces
+
+### Backend & APIs
+- **Server**: Node.js + Express + TypeScript
+- **Database**: PostgreSQL (2 instâncias)
+- **Indexer**: Ponder Framework
+- **API**: REST + GraphQL
+
+### Frontend
+- **Dashboard**: React + TypeScript + Vite
+- **Styling**: Tailwind CSS
+- **State**: React Query + React Hook Form
+- **Authentication**: JWT
+
+### DevOps & Tools
+- **Monorepo**: Turborepo + pnpm workspaces
+- **Containerization**: Docker + Docker Compose
 - **Testes**: Jest + Hardhat
-- **Deploy**: Docker + Docker Compose
-- **Explorer**: Blockscout
+- **Validation**: Zod
 
 ## 🧪 Testes e Validação
 
 O sistema foi completamente testado e validado:
 
 - ✅ Deploy de infraestrutura DREX
-- ✅ Deploy do sistema TCC
+- ✅ Deploy do sistema Vault
 - ✅ Registro de estudantes e estabelecimentos
 - ✅ Distribuição de auxílios via DREX
 - ✅ Processamento de gastos com validação de limites
 - ✅ Controle de categorias de gastos
 - ✅ Rastreabilidade de transações
+- ✅ Interface web para múltiplos usuários
+- ✅ API GraphQL para dados históricos
 
 ## 🔗 Links Úteis
 
 - **Besu RPC**: http://localhost:8545
-- **Blockscout Explorer**: http://localhost:4000
-- **Deployment Info**: `packages/drex-piloto/integrated-deployment.json`
+- **Server API**: http://localhost:3001
+- **Dashboard**: http://localhost:3000
+- **Indexer GraphQL**: http://localhost:42069
+- **Deployment Info**: `packages/deploy-info.json`
 
 ## 📚 Referências Acadêmicas
 
@@ -243,6 +317,7 @@ O sistema foi completamente testado e validado:
 - [DREX - Real Digital do Banco Central](https://www.bcb.gov.br/estabilidadefinanceira/real_digital)
 - [Wire Labs - Contratos Oficiais DREX](https://github.com/wireshape/real-digital-smart-contracts)
 - [Hyperledger Besu Documentation](https://besu.hyperledger.org/)
+- [Ponder Framework](https://ponder.sh/)
 
 ---
 
