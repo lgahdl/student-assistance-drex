@@ -1,0 +1,135 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  walletAddress    String           @id @map("wallet_address")
+  name             String
+  cpf              String           @unique
+  university       String
+  course           String?
+  monthlyAmount    Decimal          @map("monthly_amount") @db.Decimal(20, 2)
+  active           Boolean          @default(true)
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  
+  // Relations
+  spendingLimits   SpendingLimit[]
+  transactions     Transaction[]
+  registeredReceivers Receiver[]    @relation("StudentRegisteredReceivers")
+  
+  @@map("students")
+}
+
+model ExpenseType {
+  id               BigInt           @id @default(autoincrement())
+  name             String           @unique
+  description      String?
+  category         String
+  active           Boolean          @default(true)
+  createdAt        DateTime         @default(now()) @map("created_at")
+  
+  // Relations
+  spendingLimits   SpendingLimit[]
+  transactions     Transaction[]
+  receivers        ReceiverExpenseType[]
+  
+  @@map("expense_types")
+}
+
+model SpendingLimit {
+  id               BigInt           @id @default(autoincrement())
+  studentAddress   String           @map("student_address")
+  expenseTypeId    BigInt           @map("expense_type_id")
+  limitValue       Decimal          @map("limit_value") @db.Decimal(20, 2)
+  limitType        String           @map("limit_type") // "percentage" or "absolute"
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  
+  // Relations
+  student          Student          @relation(fields: [studentAddress], references: [walletAddress], onDelete: Cascade)
+  expenseType      ExpenseType      @relation(fields: [expenseTypeId], references: [id], onDelete: Cascade)
+  
+  @@unique([studentAddress, expenseTypeId])
+  @@map("spending_limits")
+}
+
+model Transaction {
+  txHash           String           @id @map("tx_hash")
+  fromAddress      String           @map("from_address")
+  toAddress        String           @map("to_address")
+  amount           Decimal          @db.Decimal(20, 8)
+  timestamp        DateTime
+  blockNumber      BigInt           @map("block_number")
+  studentAddress   String?          @map("student_address")
+  receiverAddress  String?          @map("receiver_address")
+  expenseTypeId    BigInt?          @map("expense_type_id")
+  isUnknownDestiny Boolean          @default(true) @map("is_unknown_destiny")
+  indexedAt        DateTime         @default(now()) @map("indexed_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  
+  // Relations
+  student          Student?         @relation(fields: [studentAddress], references: [walletAddress])
+  receiver         Receiver?        @relation(fields: [receiverAddress], references: [address])
+  expenseType      ExpenseType?     @relation(fields: [expenseTypeId], references: [id])
+  
+  @@map("transactions")
+}
+
+model Receiver {
+  address          String           @id
+  name             String?
+  cpfCnpj          String?          @map("cpf_cnpj")
+  type             String           // "student", "establishment", "other"
+  verified         Boolean          @default(false)
+  registeredBy     String?          @map("registered_by")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  
+  // Relations
+  registeredByStudent Student?      @relation("StudentRegisteredReceivers", fields: [registeredBy], references: [walletAddress], onDelete: SetNull)
+  transactions     Transaction[]
+  expenseTypes     ReceiverExpenseType[]
+  
+  @@map("receivers")
+}
+
+model User {
+  id               BigInt           @id @default(autoincrement())
+  username         String           @unique
+  passwordHash     String           @map("password_hash")
+  role             String           // "admin", "staff"
+  active           Boolean          @default(true)
+  createdAt        DateTime         @default(now()) @map("created_at")
+  lastLogin        DateTime?        @map("last_login")
+  
+  @@map("users")
+}
+
+model IndexerState {
+  key              String           @id
+  value            String
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  
+  @@map("indexer_state")
+}
+
+model ReceiverExpenseType {
+  receiverAddress  String           @map("receiver_address")
+  expenseTypeId    BigInt           @map("expense_type_id")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  
+  // Relations
+  receiver         Receiver         @relation(fields: [receiverAddress], references: [address], onDelete: Cascade)
+  expenseType      ExpenseType      @relation(fields: [expenseTypeId], references: [id], onDelete: Cascade)
+  
+  @@id([receiverAddress, expenseTypeId])
+  @@map("receiver_expense_types")
+} 

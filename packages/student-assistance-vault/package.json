@@ -1,0 +1,45 @@
+{
+  "name": "@tcc-monorepo/student-assistance-vault",
+  "version": "1.0.0",
+  "description": "Smart Contract Vault for DREX Student Assistance System",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy": "hardhat run scripts/deploy.ts --network localhost",
+    "deploy:besu": "hardhat run scripts/deploy.ts --network besu",
+    "fund": "hardhat run scripts/fund-vault.ts --network localhost",
+    "fund:besu": "hardhat run scripts/fund-vault.ts --network besu",
+    "distribute": "hardhat run scripts/distribute.ts --network localhost",
+    "distribute:besu": "hardhat run scripts/distribute.ts --network besu",
+    "verify": "hardhat run scripts/verify.ts",
+    "coverage": "hardhat coverage",
+    "clean": "hardhat clean",
+    "node": "hardhat node",
+    "console": "hardhat console",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.1.0",
+    "ethers": "^6.14.4"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "@types/node": "^20.0.0",
+    "hardhat": "^2.22.15",
+    "ts-node": "^10.9.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "solidity",
+    "smart-contracts",
+    "drex",
+    "student-assistance",
+    "vault",
+    "blockchain"
+  ],
+  "author": "Luiz Gustavo",
+  "license": "MIT",
+  "private": true
+} 

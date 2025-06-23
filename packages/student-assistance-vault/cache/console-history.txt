@@ -1,0 +1,6 @@
+quit
+quit;
+cd ../drex-piloto
+q
+cd ../drex-piloto && npm run docker:up
+q

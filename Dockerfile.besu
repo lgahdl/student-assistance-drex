@@ -1,0 +1,19 @@
+FROM hyperledger/besu:latest
+
+# Install curl for health checks and Node.js for deployment scripts
+USER root
+RUN apt-get update && \
+    apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy startup script
+COPY scripts/start-besu-with-deploy.sh /usr/local/bin/start-besu-with-deploy.sh
+RUN chmod +x /usr/local/bin/start-besu-with-deploy.sh
+
+# Switch back to besu user
+USER besu
+
+# Use the startup script as entrypoint
+ENTRYPOINT ["/usr/local/bin/start-besu-with-deploy.sh"] 

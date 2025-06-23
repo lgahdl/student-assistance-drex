@@ -1,0 +1,65 @@
+{
+  "network": "besu",
+  "timestamp": "2025-06-10T00:05:20.700Z",
+  "contracts": {
+    "AssistenciaEstudantil": "0xe52155361a36C7d445F2c6784B14Bf7A3C306e15",
+    "RealDigital": "0x338F940F4231662Dd9a689DdC4691450de932Be5"
+  },
+  "accounts": {
+    "deployer": "0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73",
+    "universidade": "0xFE3B557E8Fb62b89F4916B721be55cEb828dBd73"
+  },
+  "estudantes": [
+    {
+      "nome": "João Silva",
+      "cpf": "12345678901",
+      "address": "0x3BD88bFF54bbE9CB04f5090a03D5152b23983569",
+      "privateKey": "0xa4698f37be1093f25272fe55f45c9bbf1a0e7f72abeeb3d80a3804dbcb0eaed8"
+    },
+    {
+      "nome": "Maria Santos",
+      "cpf": "23456789012",
+      "address": "0xD0a799545dA7D23aB9084dA8D542513Ab03438f2",
+      "privateKey": "0x15d6f6eb00bbf52bb546b9024fdf0dd3892fe30d914a7d1e9c7117c1c14aa757"
+    },
+    {
+      "nome": "Pedro Costa",
+      "cpf": "34567890123",
+      "address": "0x5eff20FC2B6dfa0715B453D331173c3FEaABe2c3",
+      "privateKey": "0x5fd922655677d5ef352f310bce49e7a1f226f1e3dad961de330d9e488c97da31"
+    }
+  ],
+  "estabelecimentos": [
+    {
+      "nome": "Restaurante Universitário",
+      "cnpj": "12345678000195",
+      "categoria": 0,
+      "address": "0xbD45530d6112D3C6BAD409704e5D733A2003bD79",
+      "privateKey": "0x58170d65ee06c3b1a4a8470010b7259ea11fa27fafdb2346ea564c8b1bcbeca3"
+    },
+    {
+      "nome": "Papelaria Campus",
+      "cnpj": "23456789000196",
+      "categoria": 2,
+      "address": "0xF16d6902eCD3840C2bD50608B1FC470605482E1f",
+      "privateKey": "0x56b41a3478b9b3387c1aa1437c0abf00a324d8fccaa6b09f95920410334d6fd8"
+    },
+    {
+      "nome": "Moradia Estudantil",
+      "cnpj": "34567890000197",
+      "categoria": 1,
+      "address": "0xEf5861eBDFe73922EC613fC6DF040AC2284fa891",
+      "privateKey": "0x21cf2a7665cd4b958694f35ac87ad4fd3fb6ff1080266377196a3196241a25c7"
+    }
+  ],
+  "configuracoes": {
+    "valorAuxilioMensal": "500.0",
+    "limitesDefault": {
+      "alimentacao": "40",
+      "alojamento": "35",
+      "materiais": "15",
+      "transporte": "10",
+      "outros": "0"
+    }
+  }
+}

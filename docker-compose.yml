@@ -1,0 +1,134 @@
+services:
+  # Nó Hyperledger Besu com deploy automático integrado
+  besu-node:
+    build:
+      context: .
+      dockerfile: Dockerfile.besu
+    container_name: besu-node
+    ports:
+      # Porta P2P para comunicação entre nós
+      - "30303:30303/tcp"
+      - "30303:30303/udp"
+      # Porta RPC HTTP para comunicação com clientes
+      - "8545:8545"
+      # Porta RPC WebSocket
+      - "8546:8546"
+      # Porta para métricas (Prometheus)
+      - "9545:9545"
+    volumes:
+      - ./packages/drex-piloto/besu-data:/data
+      - ./packages:/opt/packages
+      - ./package.json:/opt/package.json
+
+    networks:
+      - drex-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    environment:
+      - NODE_ENV=development
+
+  # PostgreSQL database for the indexer
+  indexer-db:
+    image: postgres:15-alpine
+    container_name: indexer-db
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=indexer
+      - POSTGRES_USER=indexer
+      - POSTGRES_PASSWORD=indexer123
+    volumes:
+      - indexer-db-data:/var/lib/postgresql/data
+    networks:
+      - drex-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U indexer -d indexer"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # PostgreSQL database for the server
+  server-db:
+    image: postgres:15-alpine
+    container_name: server-db
+    ports:
+      - "5434:5432"
+    environment:
+      - POSTGRES_DB=server
+      - POSTGRES_USER=server
+      - POSTGRES_PASSWORD=server123
+    volumes:
+      - server-db-data:/var/lib/postgresql/data
+    networks:
+      - drex-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U server -d server"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  # Indexador blockchain para eventos do StudentAssistanceVault
+  student-indexer:
+    build:
+      context: ./packages/student-assistance-indexer
+      dockerfile: Dockerfile
+    container_name: student-indexer
+    depends_on:
+      besu-node:
+        condition: service_healthy
+      indexer-db:
+        condition: service_healthy
+    ports:
+      - "42069:42069"
+    environment:
+      - NODE_ENV=development
+      - PONDER_RPC_URL_1337=http://besu-node:8545
+      - DATABASE_URL=postgresql://indexer:indexer123@indexer-db:5432/indexer
+    volumes:
+      - ./packages/student-assistance-indexer/src:/app/src
+      - ./packages/student-assistance-indexer/abis:/app/abis
+      - ./packages/student-assistance-indexer/ponder.config.ts:/app/ponder.config.ts
+      - ./packages/student-assistance-indexer/ponder.schema.ts:/app/ponder.schema.ts
+    networks:
+      - drex-network
+    restart: unless-stopped
+
+  # Servidor backend para gerenciamento de estudantes e despesas
+  student-server:
+    build:
+      context: ./packages/student-assistance-server
+      dockerfile: Dockerfile
+    container_name: student-server
+    depends_on:
+      server-db:
+        condition: service_healthy
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://server:server123@server-db:5432/server
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - JWT_EXPIRES_IN=24h
+      - PORT=3001
+      - CORS_ORIGIN=http://localhost:3000
+      - BLOCKCHAIN_RPC_URL=http://besu-node:8545
+      - VAULT_CONTRACT_ADDRESS=0xAdE429ba898c34722e722415D722A70a297cE3a2
+      - DREX_TOKEN_ADDRESS=0x3C15538ED063e688c8DF3d571Cb7a0062d2fB18D
+    volumes:
+      - ./packages/student-assistance-server/src:/app/src
+      - ./packages/student-assistance-server/prisma:/app/prisma
+    networks:
+      - drex-network
+    restart: unless-stopped
+
+networks:
+  drex-network:
+    driver: bridge
+
+volumes:
+  besu-data:
+  indexer-db-data:
+  server-db-data: 
