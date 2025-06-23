@@ -303,14 +303,6 @@ O sistema foi completamente testado e validado:
 - ✅ Interface web para múltiplos usuários
 - ✅ API GraphQL para dados históricos
 
-## 🔗 Links Úteis
-
-- **Besu RPC**: http://localhost:8545
-- **Server API**: http://localhost:3001
-- **Dashboard**: http://localhost:3000
-- **Indexer GraphQL**: http://localhost:42069
-- **Deployment Info**: `packages/deploy-info.json`
-
 ## 📚 Referências Acadêmicas
 
 - [PNAES - Programa Nacional de Assistência Estudantil](https://www.gov.br/mec/pt-br/acesso-a-informacao/institucional/secretarias/secretaria-de-educacao-superior/pnaes)
@@ -323,5 +315,5 @@ O sistema foi completamente testado e validado:
 
 **Desenvolvido por**: Luiz Gustavo  
 **Projeto**: TCC - Sistema de Assistência Estudantil com DREX  
-**Ano**: 2024  
-**Status**: ✅ **Sistema Completo e Funcional**
+**Ano**: 2025  
+**Status**: ✅ **Servidor e Indexer completos e funcionais, Dashboard incompleto, com alguns bugs e sem todas as funcionalidades propostas**
